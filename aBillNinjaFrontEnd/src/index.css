@@ -1,0 +1,40 @@
+.homepage {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.welcome h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.welcome p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.direct-button {
+  background-color: #46e596;
+  color: #000000;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.direct-button:hover {
+  background-color: #38ca70;
+}
+
+.whyus {
+  margin-top: 3rem;
+  text-align: left;
+}
+
+.whyus ul {
+  list-style: none;
+  padding: 0;
+}
