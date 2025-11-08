@@ -1,20 +1,42 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext.jsx";
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+import GroupForm from "../components/GroupForm.jsx";
+
+const API = import.meta.env.VITE_API_URL;
+
 export default function Account() {
   const { token, logout } = useAuth();
   const navigate = useNavigate();
+  const [groups, setGroups] = useState([]);
   const [friends, setFriends] = useState([]);
   const [newFriendPhone, setNewFriendPhone] = useState("");
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
+
+  const loadGroups = async () => {
+    try {
+      const res = await fetch(`${API}/groups`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Failed to load groups");
+      }
+      const data = await res.json();
+      setGroups(data);
+      setStatus("idle");
+    } catch (err) {
+      setError(err.message || "Failed to load groups");
+      setStatus("error");
+    }
+  };
+
   const loadFriends = async () => {
     try {
       setStatus("loading");
       setError("");
-      const res = await fetch(`${API_BASE_URL}/users/friends`, {
+      const res = await fetch(`${API}/users/friends`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) {
@@ -29,15 +51,38 @@ export default function Account() {
       setStatus("error");
     }
   };
+
   useEffect(() => {
     loadFriends();
+    loadGroups();
   }, []);
+
+  const handleCreateGroup = async (name, phoneList) => {
+    try {
+      const res = await fetch(`${API}/groups`, {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, groupUsers: phoneList }),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Failed to add group");
+      }
+      await loadGroups();
+    } catch (err) {
+      setError(err.message || "Failed to add group");
+    }
+  };
+
   const handleAddFriend = async (e) => {
     e.preventDefault();
     if (!newFriendPhone.trim()) return;
     setError("");
     try {
-      const res = await fetch(`${API_BASE_URL}/users/friends`, {
+      const res = await fetch(`${API}/users/friends`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +106,7 @@ export default function Account() {
     );
     if (!confirmDelete) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/users/deleteAccount`, {
+      const res = await fetch(`${API}/users/deleteAccount`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -76,7 +121,7 @@ export default function Account() {
     }
   };
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "1rem" }}>
+    <div className="accountStyle">
       <h1>Account</h1>
       <section>
         <h2>Friends</h2>
@@ -116,6 +161,19 @@ export default function Account() {
           </label>
           <button type="submit">Add Friend</button>
         </form>
+        <div className="groups">
+          <h2 className="groupsTitle">Your Groups</h2>
+          {groups.length === 0 ? (
+            <p>No groups yet.</p>
+          ) : (
+            <ul>
+              {groups.map((g) => (
+                <li key={g.id}>{g.name}</li>
+              ))}
+            </ul>
+          )}
+          <GroupForm onCreate={handleCreateGroup} />
+        </div>
       </section>
       <section style={{ marginTop: "2rem" }}>
         <h2>Danger Zone</h2>

@@ -39,6 +39,12 @@
   padding: 0;
 }
 
+.accountStyle {
+  max-width: "600px";
+  margin: "0 auto";
+  padding: "1rem";
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;
