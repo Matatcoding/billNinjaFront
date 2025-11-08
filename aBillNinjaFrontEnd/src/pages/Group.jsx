@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router";
 import useQuery from "../api/useQuery";
 import useMutation from "../api/useMutation";
+import ItemForm from "../components/ItemForm";
 
 export default function Group() {
   const { id } = useParams();
@@ -37,7 +38,7 @@ export default function Group() {
           </li>
         ))}
       </ul>
-
+      <ItemForm groupId={id} members={members} />
       <h2>Items</h2>
       {itemsData.length === 0 ? (
         <p>No items yet.</p>
