@@ -60,7 +60,7 @@ export default function Account() {
   const handleCreateGroup = async (name, phoneList) => {
     try {
       const res = await fetch(`${API}/groups`, {
-        method: "Post",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
