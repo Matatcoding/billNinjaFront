@@ -5,12 +5,12 @@ import Footer from "./Footer";
 
 export default function Layout() {
   return (
-    <>
+    <div className="wrapper">
       <Navbar />
-      <main>
+      <main className="main">
         <Outlet />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
