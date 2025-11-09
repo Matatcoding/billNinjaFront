@@ -64,62 +64,62 @@ export default function Group() {
     <div>
       <h1>{group.name}</h1>
       <h2>Members</h2>
-      <ul>
+      <ul className="groupMembers">
         {members.map((m) => (
           <li key={m.id}>
             {m.first_name} {m.last_name}
           </li>
         ))}
       </ul>
-
-      <h2>Add Item</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Item name"
-          value={formData.name}
-          onChange={handleFormChange}
-          required
-        />
-        <input
-          type="number"
-          name="cost"
-          placeholder="Cost"
-          value={formData.cost}
-          onChange={handleFormChange}
-          required
-        />
-        <select
-          name="payerUserId"
-          value={formData.payerUserId}
-          onChange={handleFormChange}
-          required
-        >
-          <option value="">Select payer</option>
-          {members.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.first_name} {m.last_name}
-            </option>
-          ))}
-        </select>
-        <fieldset>
-          <legend>Select owers</legend>
-          {members.map((m) => (
-            <label key={m.id}>
-              <input
-                type="checkbox"
-                value={m.id}
-                checked={formData.owers.includes(String(m.id))}
-                onChange={handleFormChange}
-              />
-              {m.first_name} {m.last_name}
-            </label>
-          ))}
-        </fieldset>
-        <button type="submit">Add Item</button>
-      </form>
-
+      <div className="addItems">
+        <h2>Add Item</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="name"
+            placeholder="Item name"
+            value={formData.name}
+            onChange={handleFormChange}
+            required
+          />
+          <input
+            type="number"
+            name="cost"
+            placeholder="Cost"
+            value={formData.cost}
+            onChange={handleFormChange}
+            required
+          />
+          <select
+            name="payerUserId"
+            value={formData.payerUserId}
+            onChange={handleFormChange}
+            required
+          >
+            <option value="">Select payer</option>
+            {members.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.first_name} {m.last_name}
+              </option>
+            ))}
+          </select>
+          <fieldset className="selectOwers">
+            <legend>Select owers</legend>
+            {members.map((m) => (
+              <label key={m.id}>
+                <input
+                  type="checkbox"
+                  value={m.id}
+                  checked={formData.owers.includes(String(m.id))}
+                  onChange={handleFormChange}
+                />
+                {m.first_name} {m.last_name}
+              </label>
+            ))}
+          </fieldset>
+          <button type="submit">Add Item</button>
+        </form>
+      </div>
       <h2>Items</h2>
       <ul>
         {items.map((item) => {

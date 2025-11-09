@@ -187,13 +187,50 @@ export default function Account() {
           {groups.length === 0 ? (
             <p>No groups yet.</p>
           ) : (
-            <ul>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+              }}
+            >
               {groups.map((g) => (
-                <li key={g.id}>
-                  <Link to={`/groups/${g.id}`}>{g.name}</Link>
+                <li
+                  key={g.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "0.5rem 0.75rem",
+                    borderRadius: "6px",
+                    backgroundColor: "#f5f5f5",
+                  }}
+                >
+                  <Link
+                    to={`/groups/${g.id}`}
+                    style={{
+                      fontWeight: "600",
+                      fontSize: "1rem",
+                      textDecoration: "none",
+                      color: "#333",
+                    }}
+                  >
+                    {g.name}
+                  </Link>
                   <button
                     className="groupDel"
                     onClick={() => handleDeleteGroup(g.id)}
+                    style={{
+                      backgroundColor: "#d9534f",
+                      color: "white",
+                      border: "none",
+                      padding: "0.35rem 0.75rem",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
                   >
                     Delete Group
                   </button>
