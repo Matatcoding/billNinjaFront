@@ -2,11 +2,9 @@ import { useParams } from "react-router";
 import { useState } from "react";
 import useQuery from "../api/useQuery";
 import useMutation from "../api/useMutation";
-import { useAuth } from "../auth/AuthContext";
 
 export default function Group() {
   const { id: groupId } = useParams();
-  const { token } = useAuth();
 
   const { data: groupData, loading: groupLoading } = useQuery(
     `/groups/${groupId}`,
@@ -25,7 +23,7 @@ export default function Group() {
   });
 
   const createItem = useMutation("POST", "/items", [`items-${groupId}`]);
-  const payItem = useMutation("PUT", null, [`items-${groupId}`]);
+
   if (groupLoading || itemsLoading) return <p>Loading...</p>;
   if (!groupData || !itemsData) return <p>Group not found.</p>;
 
@@ -60,10 +58,6 @@ export default function Group() {
         setFormData({ name: "", cost: "", payerUserId: "", owers: [] });
       }
     );
-  };
-
-  const handlePay = (itemId) => {
-    payItem.mutate(null, null, `/items/${itemId}/pay`);
   };
 
   return (
@@ -131,24 +125,19 @@ export default function Group() {
         {items.map((item) => {
           const payer = members.find((m) => m.id === item.payer_user_id);
           const owers = item.owers || [];
-          const splitCost = (item.cost / owers.length).toFixed(2);
-
+          const itemMembers = owers.length + 1;
+          const splitCost = (item.cost / itemMembers).toFixed(2);
           return (
             <li key={item.id}>
               <strong>{item.name}</strong> - ${item.cost} <br />
               Paid by: {payer?.first_name} {payer?.last_name} <br />
               Owed by:
               <ul>
-                {owers.map((owerId) => {
-                  const ower = members.find((m) => m.id === owerId);
+                {owers.map((ower) => {
+                  const member = members.find((m) => m.id === ower.id);
                   return (
-                    <li key={owerId}>
-                      {ower?.first_name} {ower?.last_name} owes ${splitCost}
-                      {owerId === token?.userId && (
-                        <button onClick={() => handlePay(item.id)}>
-                          Mark as Paid
-                        </button>
-                      )}
+                    <li key={ower.id}>
+                      {member?.first_name} {member?.last_name} owes ${splitCost}
                     </li>
                   );
                 })}
