@@ -89,6 +89,15 @@ button.danger {
 button.danger:hover {
   background-color: #c9302c;
 }
+
+.groupDel {
+  background-color: "red";
+  color: "white";
+  border: "none";
+  padding: "0.5rem 1rem";
+  cursor: "pointer";
+}
+
 /* Forms */
 form {
   display: flex;

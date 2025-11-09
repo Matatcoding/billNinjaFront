@@ -15,8 +15,6 @@ export default function Register() {
     const first_name = formData.get("first_name");
     const last_name = formData.get("last_name");
 
-    console.log("Registering:", { phone, password, first_name, last_name });
-
     try {
       await register({ phone, password, first_name, last_name });
       navigate("/");
