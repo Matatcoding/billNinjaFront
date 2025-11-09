@@ -14,6 +14,9 @@ export default function Register() {
     const password = formData.get("password");
     const first_name = formData.get("first_name");
     const last_name = formData.get("last_name");
+
+    console.log("Registering:", { phone, password, first_name, last_name });
+
     try {
       await register({ phone, password, first_name, last_name });
       navigate("/");
@@ -25,7 +28,14 @@ export default function Register() {
   return (
     <>
       <h1>Register for an account</h1>
-      <form action={onRegister}>
+      <form
+        form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          onRegister(formData);
+        }}
+      >
         <label>
           Phone Number
           <input type="phone" name="phone" />

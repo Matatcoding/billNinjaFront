@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { useAuth } from "../auth/AuthContext.jsx";
 import GroupForm from "../components/GroupForm.jsx";
 
@@ -131,7 +131,7 @@ export default function Account() {
         {status === "idle" && friends.length > 0 && (
           <ul>
             {friends.map((f) => (
-              <li key={f.id}>
+              <li key={f.phone}>
                 {f.first_name
                   ? `${f.first_name} ${f.last_name} (${f.phone})`
                   : f.phone}
@@ -168,7 +168,9 @@ export default function Account() {
           ) : (
             <ul>
               {groups.map((g) => (
-                <li key={g.id}>{g.name}</li>
+                <li key={g.id}>
+                  <Link to={`/groups/${g.id}`}>{g.name}</Link>
+                </li>
               ))}
             </ul>
           )}
