@@ -121,6 +121,19 @@ select:focus {
   border-color: #4caf50;
   outline: none;
 }
+
+.addItems {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.selectOwers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 180%;
+}
 /* Lists and cards */
 ul {
   list-style-type: none;
@@ -133,6 +146,12 @@ li {
   border: 1px solid #ddd;
   border-radius: 4px;
 }
+
+.groupMembers {
+  display: flex;
+  flex-wrap: "wrap";
+}
+
 li span {
   font-weight: bold;
 }
