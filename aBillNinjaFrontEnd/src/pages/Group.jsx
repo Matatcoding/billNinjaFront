@@ -1,31 +1,73 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
-import useQuery from "../api/useQuery";
-import useMutation from "../api/useMutation";
+import { useAuth } from "../auth/AuthContext";
+// import useQuery from "../api/useQuery";
+// import useMutation from "../api/useMutation";
 import ItemForm from "../components/ItemForm";
+
+const API = import.meta.env.VITE_API_URL;
 
 export default function Group() {
   const { id } = useParams();
-  const {
-    data: groupData,
-    loading: groupLoading,
-    error: groupError,
-  } = useQuery(`/groups/${id}`, `group-${id}`);
-  const {
-    data: itemsData,
-    loading: itemsLoading,
-    error: itemsError,
-  } = useQuery(`/items?groupId=${id}`, `items-${id}`);
-  const { mutate: payItem } = useMutation("PUT", "", [`items-${id}`]);
+  const { token } = useAuth();
 
-  const handlePay = (itemId) => {
-    payItem(null, `/items/${itemId}/pay`);
+  const [group, setGroup] = useState(null);
+  const [members, setMembers] = useState([]);
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const loadGroup = async () => {
+    try {
+      const res = await fetch(`${API}/groups/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to load group");
+      const data = await res.json();
+      setGroup(data.group);
+      setMembers(data.members);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  if (groupLoading || itemsLoading) return <p>Loading...</p>;
-  if (groupError || itemsError) return <p>Error loading group.</p>;
+  const loadItems = async () => {
+    try {
+      const res = await fetch(`${API}/items?groupId=${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to load items");
+      const data = await res.json();
+      setItems(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
-  const { group, members } = groupData;
+  const handlePay = async (itemId) => {
+    try {
+      const res = await fetch(`${API}/items/${itemId}/pay`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to update payment");
+      await loadItems();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+  useEffect(() => {
+    const fetchAll = async () => {
+      setLoading(true);
+      await Promise.all([loadGroup(), loadItems()]);
+      setLoading(false);
+    };
+    fetchAll();
+  }, [id]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!group) return <p>Group not found.</p>;
 
   return (
     <section>
@@ -40,29 +82,43 @@ export default function Group() {
       </ul>
       <ItemForm groupId={id} members={members} />
       <h2>Items</h2>
-      {itemsData.length === 0 ? (
+      {items.length === 0 ? (
         <p>No items yet.</p>
       ) : (
-        itemsData.map((item) => {
+        items.map((item) => {
           const owers = item.owers || [];
           const itemMembers = owers.length + 1;
-          const splitAmount = (item.cost / itemMembers.length).toFixed(2);
+          const splitAmount = (item.cost / itemMembers).toFixed(2);
+          const payer = members.find((m) => m.id === item.payerUserId);
           return (
             <div key={item.id} className="item-card">
               <h3>{item.name}</h3>
               <p>Cost: ${item.cost}</p>
-              <p>Payer: {item.payer_name}</p>
-              <ul>
-                {owers.map((ower) => (
-                  <li key={ower.id}>
-                    {ower.first_name} {ower.last_name} owes ${splitAmount}
-                    <input
-                      type="checkbox"
-                      checked={ower.paid}
-                      onChange={() => handlePay(item.id)}
-                    />
-                  </li>
-                ))}
+              <p>
+                Payer:{" "}
+                {payer ? `${payer.first_name} ${payer.last_name}` : "Unknown"}
+              </p>
+              <p className="owersTitle">Owers:</p>
+              <ul className="owers">
+                {owers.length === 0 ? (
+                  <li>No owers</li>
+                ) : (
+                  owers.map((ower) => {
+                    const member = members.find((m) => m.id === ower.id);
+                    return member ? (
+                      <li key={ower.id}>
+                        {member.first_name} {member.last_name} owes $
+                        {splitAmount}
+                        <input
+                          type="checkbox"
+                          checked={ower.paid}
+                          onChange={() => handlePay(item.id)}
+                          disabled={ower.paid}
+                        />
+                      </li>
+                    ) : null;
+                  })
+                )}
               </ul>
             </div>
           );

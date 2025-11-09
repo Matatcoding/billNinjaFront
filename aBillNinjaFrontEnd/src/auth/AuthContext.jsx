@@ -17,9 +17,9 @@ export function AuthProvider({ children }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
     });
-    const result = await response.text();
-    if (!response.ok) throw Error(result);
-    setToken(result);
+    const result = await response.json();
+    if (!response.ok) throw Error(result.error || "Registration failed");
+    setToken(result.token);
   };
 
   const login = async (credentials) => {
@@ -28,9 +28,9 @@ export function AuthProvider({ children }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
     });
-    const result = await response.text();
-    if (!response.ok) throw Error(result);
-    setToken(result);
+    const result = await response.json();
+    if (!response.ok) throw Error(result.error || "Login failed");
+    setToken(result.token);
   };
 
   const logout = () => {
@@ -38,7 +38,12 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem("token");
   };
 
-  const value = { token, register, login, logout };
+  const value = {
+    token,
+    register,
+    login,
+    logout,
+  };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

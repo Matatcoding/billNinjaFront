@@ -12,6 +12,9 @@ export default function Login() {
   const onLogin = async (formData) => {
     const phone = formData.get("phone");
     const password = formData.get("password");
+
+    console.log("Logging in:", { phone, password });
+
     try {
       await login({ phone, password });
       navigate("/");
@@ -23,7 +26,14 @@ export default function Login() {
   return (
     <>
       <h1>Log in to your account</h1>
-      <form action={onLogin}>
+      <form
+        form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          onLogin(formData);
+        }}
+      >
         <label>
           Phone Number
           <input type="text" name="phone" required />
