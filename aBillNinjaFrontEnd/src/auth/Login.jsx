@@ -13,8 +13,6 @@ export default function Login() {
     const phone = formData.get("phone");
     const password = formData.get("password");
 
-    console.log("Logging in:", { phone, password });
-
     try {
       await login({ phone, password });
       navigate("/");

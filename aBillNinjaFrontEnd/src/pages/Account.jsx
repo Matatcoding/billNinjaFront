@@ -191,7 +191,10 @@ export default function Account() {
               {groups.map((g) => (
                 <li key={g.id}>
                   <Link to={`/groups/${g.id}`}>{g.name}</Link>
-                  <button onClick={() => handleDeleteGroup(g.id)}>
+                  <button
+                    className="groupDel"
+                    onClick={() => handleDeleteGroup(g.id)}
+                  >
                     Delete Group
                   </button>
                 </li>
