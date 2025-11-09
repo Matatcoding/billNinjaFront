@@ -134,9 +134,9 @@ export default function Group() {
               Owed by:
               <ul>
                 {owers.map((ower) => {
-                  const member = members.find((m) => m.id === ower.id);
+                  const member = members.find((m) => m.id === ower);
                   return (
-                    <li key={ower.id}>
+                    <li key={ower}>
                       {member?.first_name} {member?.last_name} owes ${splitCost}
                     </li>
                   );
