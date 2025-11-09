@@ -120,6 +120,27 @@ export default function Account() {
       setError(err.message || "Failed to delete account");
     }
   };
+  const handleDeleteGroup = async (groupId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this group?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(`${API}/groups/${groupId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Failed to delete group");
+      }
+      await loadGroups();
+    } catch (err) {
+      setError(err.message || "Failed to delete group");
+    }
+  };
+
   return (
     <div className="accountStyle">
       <h1>Account</h1>
@@ -170,6 +191,9 @@ export default function Account() {
               {groups.map((g) => (
                 <li key={g.id}>
                   <Link to={`/groups/${g.id}`}>{g.name}</Link>
+                  <button onClick={() => handleDeleteGroup(g.id)}>
+                    Delete Group
+                  </button>
                 </li>
               ))}
             </ul>
